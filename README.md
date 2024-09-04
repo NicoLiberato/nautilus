@@ -10,6 +10,7 @@ You can install the Kubernetes client library using pip:
 
 ```sh
 pip install kubernetes 
+```
 
 ## Usage
 
@@ -27,3 +28,10 @@ The script can be run with a few simple command-line arguments to retrieve diffe
 
    ```sh
    python3 nautilus.py --cluster-info
+
+## Documentation
+
+For more information, refer to the following resources:
+
+- Kubernetes Documentation
+- Kubernetes v1 API Reference
