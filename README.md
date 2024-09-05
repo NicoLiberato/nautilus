@@ -49,10 +49,11 @@ Test the nodes coomnd , running
 python3 nautilus.py --nodes
 ```
 
-## Documentation
+## Documentation and references
 
 For more information, refer to the following resources:
 
 - Kubernetes Documentation  : <https://kubernetes.io/docs/home/>
 - Kubernetes v1 API Reference  : <https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/>
+- Kubernetes Python Client : : <https://github.com/kubernetes-client/python>
 
