@@ -68,6 +68,33 @@ class DescribeK8s:
         host = self.v1.api_client.configuration.host
         print(f"KubeDNS is running at http://{host}/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy")
         print(f"Kubernetes control plane is running at {host}")
+        
+        def get_nodes(self):
+        """Get information about all nodes in the cluster."""
+        try:
+            nodes = self.v1.list_node()
+            return nodes.items
+        except client.ApiException as e:
+            print(f"Error getting nodes: {e}")
+            return None
+
+    def print_nodes_info(self):
+        """Print information about all nodes in the cluster."""
+        nodes = self.get_nodes()
+        if nodes:
+            print("Cluster Nodes:")
+            for node in nodes:
+                print(f"  Name: {node.metadata.name}")
+                print(f"    Status: {node.status.phase}")
+                print(f"    Kubernetes Version: {node.status.node_info.kubelet_version}")
+                print(f"    OS Image: {node.status.node_info.os_image}")
+                print(f"    Container Runtime: {node.status.node_info.container_runtime_version}")
+                print("    Addresses:")
+                for address in node.status.addresses:
+                    print(f"      {address.type}: {address.address}")
+                print()
+        else:
+            print("No nodes found or error occurred while fetching nodes.")
 
 
 def main():
@@ -75,7 +102,7 @@ def main():
     parser.add_argument("--namespace", help="Set the namespace to get the information")
     parser.add_argument("--cluster-info", "--cluster", help="Print the cluster information", action="store_true")
     parser.add_argument("--api-versions", help="Print the API versions", action="store_true")
-
+    parser.add_argument("--nodes", help="Print information about all nodes", action="store_true")
     args = parser.parse_args()
 
     k8s_cluster = DescribeK8s("kube-system")
@@ -87,6 +114,8 @@ def main():
         k8s_cluster.print_cluster_info()
     elif args.api_versions:
         k8s_cluster.print_api_versions()
+     elif args.nodes:
+        k8s_cluster.print_nodes_info()
     else:
         parser.print_help()
 
