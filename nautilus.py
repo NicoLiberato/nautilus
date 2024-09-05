@@ -69,7 +69,7 @@ class DescribeK8s:
         print(f"KubeDNS is running at http://{host}/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy")
         print(f"Kubernetes control plane is running at {host}")
         
-        def get_nodes(self):
+    def get_nodes(self):
         """Get information about all nodes in the cluster."""
         try:
             nodes = self.v1.list_node()
@@ -114,7 +114,7 @@ def main():
         k8s_cluster.print_cluster_info()
     elif args.api_versions:
         k8s_cluster.print_api_versions()
-     elif args.nodes:
+    elif args.nodes:
         k8s_cluster.print_nodes_info()
     else:
         parser.print_help()

@@ -43,6 +43,10 @@ Create a cluster and test the commands
 ```sh
 kind create cluster --name my-cluster
 ```
+Test the nodes coomnd , running 
+```sh
+python3 nautilus.py --nodes
+```
 
 ## Documentation
 
