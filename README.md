@@ -1,4 +1,5 @@
 ![nautilus](images/output.jpg)
+=============
 
 # nautilus
 CLI or command line tool for communicating with a Kubernetes cluster. This project is a basic exercise designed to simplify the way Kubernetes commands are typed and executed. It provides a limited set of commands to interact with a Kubernetes cluster, making it easier for beginners to understand and use Kubernetes.
@@ -52,6 +53,6 @@ python3 nautilus.py --nodes
 
 For more information, refer to the following resources:
 
-- Kubernetes Documentation
-- Kubernetes v1 API Reference
+- Kubernetes Documentation  : <https://kubernetes.io/docs/home/>
+- Kubernetes v1 API Reference  : <https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/>
 
