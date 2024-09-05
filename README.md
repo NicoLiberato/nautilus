@@ -1,10 +1,6 @@
-<<<<<<< HEAD
 ![My Image](images/output.jpg)
 
 # nautilus
-=======
-# nαutilus
->>>>>>> 4dbbad6a593be31aa697a0d236f606fb4dbb6504
 CLI or command line tool for communicating with a Kubernetes cluster. This project is a basic exercise designed to simplify the way Kubernetes commands are typed and executed. It provides a limited set of commands to interact with a Kubernetes cluster, making it easier for beginners to understand and use Kubernetes.
 
 ## Prerequisites
