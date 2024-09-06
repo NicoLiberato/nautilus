@@ -125,24 +125,93 @@ class DescribeK8s:
             print("No nodes found or error occurred while fetching nodes.")
 
     
-    def switch_namespace(self, name):
-        """Switch the active namespace in the current context."""
+
+    def switch_context(self, context_name):
+        """Switch the active context."""
         try:
-            # Load the current config
-            kube_config = config.load_kube_config()  
-            # Get the current context
-            current_context = config.list_kube_config_contexts()[1]
-            # Update the namespace in the current context
-            current_context['context']['namespace'] = name        
-            # Update the current context in the config
-            kube_config.set_context(current_context['name'], current_context['context'])       
-            # Save the config
-            kube_config.persist_config()
-            print(f"Switched to namespace '{name}'")
+            contexts, active_context = config.list_kube_config_contexts()
+            if context_name not in [ctx['name'] for ctx in contexts]:
+                print(f"Context '{context_name}' not found.")
+                return False
+            
+            config.load_kube_config(context=context_name)
+            print(f"Switched to context '{context_name}'")
             return True
         except Exception as e:
-            print(f"Error switching namespace: {e}")
+            print(f"Error switching context: {e}")
             return False
+
+    def apply(self, filename):
+        """Apply a configuration file to create or update resources."""
+        try:
+            with open(filename, 'r') as f:
+                docs = yaml.safe_load_all(f)
+                for doc in docs:
+                    kind = doc.get("kind", "").lower()
+                    name = doc["metadata"]["name"]
+                    
+                    if kind == "deployment":
+                        api_instance = self.apps_v1
+                        api_func = api_instance.create_namespaced_deployment
+                        update_func = api_instance.patch_namespaced_deployment
+                    elif kind == "service":
+                        api_instance = self.v1
+                        api_func = api_instance.create_namespaced_service
+                        update_func = api_instance.patch_namespaced_service
+                    else:
+                        print(f"Unsupported resource kind: {kind}")
+                        continue
+                    
+                    try:
+                        api_func(body=doc, namespace=self.namespace)
+                        print(f"{kind.capitalize()} '{name}' created.")
+                    except client.ApiException as e:
+                        if e.status == 409:  # Conflict, resource already exists
+                            update_func(name=name, namespace=self.namespace, body=doc)
+                            print(f"{kind.capitalize()} '{name}' updated.")
+                        else:
+                            print(f"Error applying {kind} '{name}': {e}")
+        except Exception as e:
+            print(f"Error applying configuration: {e}")
+
+    def create(self, resource_type, name, image=None, replicas=None):
+        """Create a new resource."""
+        try:
+            if resource_type.lower() == "deployment":
+                body = client.V1Deployment(
+                    metadata=client.V1ObjectMeta(name=name),
+                    spec=client.V1DeploymentSpec(
+                        replicas=replicas,
+                        selector=client.V1LabelSelector(
+                            match_labels={"app": name}
+                        ),
+                        template=client.V1PodTemplateSpec(
+                            metadata=client.V1ObjectMeta(labels={"app": name}),
+                            spec=client.V1PodSpec(
+                                containers=[client.V1Container(
+                                    name=name,
+                                    image=image
+                                )]
+                            )
+                        )
+                    )
+                )
+                self.apps_v1.create_namespaced_deployment(namespace=self.namespace, body=body)
+                print(f"Deployment '{name}' created.")
+            elif resource_type.lower() == "service":
+                body = client.V1Service(
+                    metadata=client.V1ObjectMeta(name=name),
+                    spec=client.V1ServiceSpec(
+                        selector={"app": name},
+                        ports=[client.V1ServicePort(port=80)]
+                    )
+                )
+                self.v1.create_namespaced_service(namespace=self.namespace, body=body)
+                print(f"Service '{name}' created.")
+            else:
+                print(f"Unsupported resource type: {resource_type}")
+        except client.ApiException as e:
+            print(f"Error creating {resource_type}: {e}")
 
     @staticmethod
     def calculate_age(creation_time):
@@ -172,10 +241,14 @@ def main():
         "--nodes", help="Print information about all nodes", action="store_true")
     parser.add_argument(
         "--list_namespaces", help="Print information about all namespaces", action="store_true")
-    parser.add_argument("--switch-namespace", help="Switch context/namespace")
+    parser.add_argument("--switch-context", help="Switch to a different context")
+    parser.add_argument("--apply", help="Apply a configuration file")
+    parser.add_argument("--create", nargs=3, metavar=("RESOURCE_TYPE", "NAME", "IMAGE"),
+                        help="Create a new resource (deployment or service)")
+    parser.add_argument("--replicas", type=int, help="Number of replicas for deployment")
     args = parser.parse_args()
 
-    k8s_cluster = DescribeK8s("kube-system")
+    k8s_cluster = DescribeK8s("default")
 
     if args.namespace:
         k8s_cluster.set_namespace(args.namespace)
@@ -188,8 +261,13 @@ def main():
         k8s_cluster.print_nodes_info()
     elif args.list_namespaces:
         k8s_cluster.print_namespaces_info()
-    elif args.switch_namespace:
-        k8s_cluster.switch_namespace(args.namespace)
+    elif args.switch_context:
+        k8s_cluster.switch_context(args.switch_context)
+    elif args.apply:
+        k8s_cluster.apply(args.apply)
+    elif args.create:
+        resource_type, name, image = args.create
+        k8s_cluster.create(resource_type, name, image, args.replicas)
     else:
         parser.print_help()
 
