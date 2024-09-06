@@ -20,6 +20,11 @@ pip install kubernetes
 
 The script can be run with a few simple command-line arguments to retrieve different pieces of information about the Kubernetes cluster.
 
+### Command-Line Arguments
+
+--namespace: Set the namespace to get the information.
+--cluster-info or --cluster: Print the cluster information.
+--api-versions: Print the API versions.
 
 
 ### Examples
@@ -35,7 +40,7 @@ The script can be run with a few simple command-line arguments to retrieve diffe
    ```sh
    python3 nautilus.py --apply config.yaml
    ```
-   
+
 3. **Create a Deployment:**
 
    ```sh
