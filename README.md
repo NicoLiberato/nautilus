@@ -30,36 +30,27 @@ The script can be run with a few simple command-line arguments to retrieve diffe
    python3 nautilus.py --cluster-info
    ```
 
-2. **Apply a Configuration File::**
+2. **Apply a Configuration File:**
 
    ```sh
    python3 nautilus.py --apply config.yaml
    ```
-
-```markdown
-3. **Create a Deployment:::**
+   
+3. **Create a Deployment:**
 
    ```sh
    python3 nautilus.py --create deployment my-app my-image:latest --replicas 3
    ```
-   ```
-```
-3. **Create a Deployment:::**
 
- ```sh
-   python3 nautilus.py --create deployment my-app my-image:latest --replicas 3
-```
-
-4. **Create a Service:::**
-
- ```sh
+4. **Create a Service:**
+   ```sh
    python3 nautilus.py --create service my-service
-```
-4. **Switch Context::::**
+   ```
 
- ```sh
+4. **Switch Context:**
+   ```sh
    python3 nautilus.py --switch-context my-context
-```
+   ```
 
 ### How to test commands
 
