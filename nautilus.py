@@ -104,6 +104,28 @@ class DescribeK8s:
                 age = self.calculate_age(namespace.metadata.creation_timestamp)
                 print(f"{name}\t{status}\t{age}")
         print()
+    
+    def list_pods(self):
+        """List all pods in the current namespace."""
+        try:
+            api_instance = client.CoreV1Api()
+            pod_list = api_instance.list_namespaced_pod(namespace=self.namespace)
+            
+            print(f"Pods in namespace '{self.namespace}':")
+            for pod in pod_list.items:
+                name = pod.metadata.name
+                status = pod.status.phase
+                ip = pod.status.pod_ip
+                node = pod.spec.node_name
+                
+                print(f"Name: {name}")
+                print(f"  Status: {status}")
+                print(f"  IP: {ip}")
+                print(f"  Node: {node}")
+                print("---")
+            
+        except client.ApiException as e:
+            print(f"Exception when calling CoreV1Api->list_namespaced_pod: {e}")
 
     def print_nodes_info(self):
         """Print information about all nodes in the cluster."""
@@ -251,9 +273,14 @@ def main():
     parser.add_argument("--create", nargs=3, metavar=("RESOURCE_TYPE", "NAME", "IMAGE"),
                         help="Create a new resource (deployment or service)")
     parser.add_argument("--replicas", type=int, help="Number of replicas for deployment")
+    parser.add_argument("--list-pods", help="List all pods in the current namespace", action="store_true")
     args = parser.parse_args()
-
+    
     k8s_cluster = DescribeK8s("default")
+
+    
+
+    
 
     if args.namespace:
         k8s_cluster.set_namespace(args.namespace)
@@ -273,6 +300,8 @@ def main():
     elif args.create:
         resource_type, name, image = args.create
         k8s_cluster.create(resource_type, name, image, args.replicas)
+    if args.list_pods:
+        k8s_cluster.list_pods()
     else:
         parser.print_help()
 
