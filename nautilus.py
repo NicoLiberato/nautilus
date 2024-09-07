@@ -159,6 +159,10 @@ class DescribeK8s:
                         api_instance = self.v1
                         api_func = api_instance.create_namespaced_service
                         update_func = api_instance.patch_namespaced_service
+                    elif kind == "pod":
+                        api_instance = self.v1
+                        api_func = api_instance.create_namespaced_pod
+                        update_func = api_instance.patch_namespaced_pod
                     else:
                         print(f"Unsupported resource kind: {kind}")
                         continue
