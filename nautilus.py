@@ -11,7 +11,7 @@ class DescribeK8s:
     """Initialize the DescribeK8s object with the given namespace."""
 
     def __init__(self, namespace):
-        self.config = config.load_kube_config()
+        self.config = config.load_kube_config()    
         self.namespace = namespace
         self.v1 = client.CoreV1Api()
 
