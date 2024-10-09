@@ -1,4 +1,4 @@
-![nautilus](images/output.jpg)
+<img src="images/output.jpg" width="300" alt="output.jp">
 =============
 
 # nαutilus (alpha)
