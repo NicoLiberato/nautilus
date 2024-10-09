@@ -1,4 +1,4 @@
-<img src="images/output.jpg" width="300" alt="output.jp">
+<img src="images/output.jpg" width="600" alt="output.jp">
 =============
 
 # nαutilus (alpha)
