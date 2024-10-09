@@ -76,6 +76,8 @@ Test the nodes coomnd , running
 python3 nautilus.py --nodes
 ```
 
+### Configure a load balancer
+
 ## Documentation and references
 
 For more information, refer to the following resources:
